@@ -167,7 +167,7 @@ namespace Npgsql
 					}
 				}
 
-				context.Stream = new BufferedStream(stream);
+				context.Stream = new NpgsqlBufferedStream(stream);
 				context.Socket = socket;
 
 				NpgsqlEventLog.LogMsg(resman, "Log_ConnectedTo", LogLevel.Normal, context.Host, context.Port);

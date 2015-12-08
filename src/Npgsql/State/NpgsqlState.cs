@@ -317,6 +317,32 @@ namespace Npgsql
 		{
 			IterateThroughAllResponses(ProcessBackendResponsesEnum(context, false));
 		}
+		
+		internal void ProcessBackendResponsesWhileExists(NpgsqlConnector context)
+		{
+			do
+			{
+				IterateThroughAllResponses(ProcessExistingBackendResponses(context));
+			} while (!context.Stream.IsBufferEmpty);
+		}
+		
+		internal IEnumerable<IServerResponseObject> ProcessExistingBackendResponses(NpgsqlConnector context)
+		{
+			try
+			{
+				return ProcessBackendResponses_Ver_3(context);
+			}
+			catch (ThreadAbortException)
+			{
+				try
+				{
+					context.CancelRequest();
+					context.Close();
+				}
+				catch { }
+				throw;
+			}
+		}
 
 		private static void IterateThroughAllResponses(IEnumerable<IServerResponseObject> ienum)
 		{
